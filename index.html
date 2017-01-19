@@ -5,7 +5,16 @@ Welcome!
 <script>
   function reqListener () {
     var playlistDom = document.getElementById('playlist_content');
-    playlistDom.innerHTML = this.responseText;
+    var playlists = JSON.parse(this.responseText);
+    
+    for (var i = 0; i < playlists.tracks.items.length; i++) {
+      var images = playlists.tracks.items[i].track.album.images;
+      for (var j = 0; j < images.length; j++) {
+        var img = new Image(100, 100);
+        img.src = images[j].url;
+        playlistDom.appendChild(img);
+      }
+    }
   }
   
 

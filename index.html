@@ -1,19 +1,25 @@
-Welcome!
+<audio id="player" preload="auto"></audio>
 
 <div id="playlist_content"></div>
 
 <script>
   function reqListener () {
     var playlistDom = document.getElementById('playlist_content');
+    var player = document.getElementById('player');
     var playlists = JSON.parse(this.responseText);
     
+    function onclick(track, e) {
+      player.src =  track.preview_url;
+      player.play();
+    }
+
     for (var i = 0; i < playlists.tracks.items.length; i++) {
-      var images = playlists.tracks.items[i].track.album.images;
-      for (var j = 0; j < images.length; j++) {
-        var img = new Image(100, 100);
-        img.src = images[j].url;
-        playlistDom.appendChild(img);
-      }
+      var img = new Image(500, 500);
+
+      var track = playlists.tracks.items[i].track;
+      img.addEventListener('click', onclick.bind(null, track));
+      img.src = track.album.images[0].url;
+      playlistDom.appendChild(img);
     }
   }
   

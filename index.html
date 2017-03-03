@@ -1,6 +1,7 @@
 <button onclick="onStartButtonClick()"> start</button>
 <button onclick="onStopButtonClick()"> stop</button>
 
+<div id="testdiv">testvalue</div>
 
 <script>
 
@@ -67,6 +68,8 @@ function handleNotifications(event) {
 
 function onNewBreathalyzerValue(value) {
   // USE THIS FUNCTION FOR FUN STUFF
+  $div = document.getElementById('testdiv');
+  $div.innerHTML = value.toString();
 }
 
 </script>

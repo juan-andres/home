@@ -1,31 +1,23 @@
-<audio id="player" preload="auto"></audio>
-
-<div id="playlist_content"></div>
+<button onclick="onButtonClick()"> Read me </button>
 
 <script>
-  function reqListener () {
-    var playlistDom = document.getElementById('playlist_content');
-    var player = document.getElementById('player');
-    var playlists = JSON.parse(this.responseText);
-    
-    function onclick(track, e) {
-      player.src =  track.preview_url;
-      player.play();
-    }
 
-    for (var i = 0; i < playlists.tracks.items.length; i++) {
-      var img = new Image(500, 500);
+function onButtonClick() {
+  let options = {
+    filters: [{name: 'OSCARBLE'}]
+  };
 
-      var track = playlists.tracks.items[i].track;
-      img.addEventListener('click', onclick.bind(null, track));
-      img.src = track.album.images[0].url;
-      playlistDom.appendChild(img);
-    }
-  }
-  
+  console.log('Requesting Bluetooth Device...');
+  console.log('with ' + JSON.stringify(options));
+  navigator.bluetooth.requestDevice(options)
+  .then(device => {
+    console.log('> Name:             ' + device.name);
+    console.log('> Id:               ' + device.id);
+    console.log('> Connected:        ' + device.gatt.connected);
+  })
+  .catch(error => {
+    console.log('Argh! ' + error);
+  });
+}
 
-  var oReq = new XMLHttpRequest();
-  oReq.addEventListener("load", reqListener);
-  oReq.open("GET", "https://juanandres-spotify-micro.herokuapp.com/playlistOfTheMonth", true);
-  oReq.send();
 </script>

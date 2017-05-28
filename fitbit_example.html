@@ -1,1 +1,34 @@
 fitbit example
+
+<button onclick="getActivity()"> get activity </button>
+<div id="textDiv">here</div>
+
+<script>
+
+  function getActivity() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', "//api.fitbit.com/1/user/3J7VK3/activities/date/2017-02-14.json", true);
+    xhr.setRequestHeader('Access-Control-Allow-Headers', '*')
+    xhr.onreadystatechange = handler;
+    xhr.send()
+
+    function handler(evtXHR) {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+            outputResult();
+        }
+        else {
+          alert("Invocation Errors Occured");
+        }
+      }
+    }
+
+    function outputResult() {
+      var response = xhr.responseText;
+      var textDiv = document.getElementById("textDiv");
+      textDiv.innerHTML += response;
+    }
+  }
+
+
+</script>

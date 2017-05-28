@@ -1,0 +1,75 @@
+<button onclick="onStartButtonClick()"> start</button>
+<button onclick="onStopButtonClick()"> stop</button>
+
+<div id="testdiv">testvalue</div>
+
+<script>
+
+var myCharacteristic;
+
+function onStartButtonClick() {
+  let serviceUuid = "fbc9cb30-df8f-4e43-901a-68b37a55ea69";
+  let characteristicUuid = "30038670-753d-4d03-a3b0-6a0274b94e13";
+
+
+  console.log('Requesting Bluetooth Device...');
+  navigator.bluetooth.requestDevice({filters: [{services: [serviceUuid]}]})
+  .then(device => {
+    console.log('Connecting to GATT Server...');
+    return device.gatt.connect();
+  })
+  .then(server => {
+    console.log('Getting Service...');
+    return server.getPrimaryService(serviceUuid);
+  })
+  .then(service => {
+    console.log('Getting Characteristic...');
+    return service.getCharacteristic(characteristicUuid);
+  })
+  .then(characteristic => {
+    myCharacteristic = characteristic;
+    return myCharacteristic.startNotifications().then(_ => {
+      console.log('> Notifications started');
+      myCharacteristic.addEventListener('characteristicvaluechanged',
+          handleNotifications);
+    });
+  })
+  .catch(error => {
+    console.log('Argh! ' + error);
+  });
+}
+
+function onStopButtonClick() {
+  if (myCharacteristic) {
+    myCharacteristic.stopNotifications()
+    .then(_ => {
+      log('> Notifications stopped');
+      myCharacteristic.removeEventListener('characteristicvaluechanged',
+          handleNotifications);
+    })
+    .catch(error => {
+      log('Argh! ' + error);
+    });
+  }
+}
+
+function handleNotifications(event) {
+  let value = event.target.value;
+
+  let buffer = new ArrayBuffer(2);
+  let view = new DataView(buffer);
+  view.setUint8(0, value.getUint8(1));
+  let byte2 = view.getUint16()
+
+  let breathalyzerValue = byte2 + value.getUint8(); // 0 - 1024
+
+  onNewBreathalyzerValue(breathalyzerValue);
+}
+
+function onNewBreathalyzerValue(value) {
+  // USE THIS FUNCTION FOR FUN STUFF
+  $div = document.getElementById('testdiv');
+  $div.innerHTML = value.toString();
+}
+
+</script>

@@ -8,7 +8,8 @@ fitbit example
   function getActivity() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', "//api.fitbit.com/1/user/3J7VK3/activities/date/2017-02-14.json", true);
-    xhr.setRequestHeader('Access-Control-Allow-Headers', '*')
+    // xhr.withCredentials = true;
+    xhr.setRequestHeader('Authorization', 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzSjdWSzMiLCJhdWQiOiIyMjdZRlQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJyc29jIHJzZXQgcmFjdCBybG9jIHJ3ZWkgcmhyIHJudXQgcnBybyByc2xlIiwiZXhwIjoxNTI3NDc0MTMwLCJpYXQiOjE0OTYwMTg1NTB9.uXcFi9kFP5UcyRNSHC9_1rQyw85Mx8kfq9ZgUIDZtG0')
     xhr.onreadystatechange = handler;
     xhr.send()
 

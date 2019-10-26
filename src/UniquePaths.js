@@ -81,7 +81,7 @@ class UniquePaths extends Component {
     const id = getId(i, j);
     const className = this.getClass(i, j);
     return (
-      <td className={className} id={id} key={id} onClick={this.onClick(i, j)}>
+      <td className={className} id={id} key={id}>
         0
       </td>
     );

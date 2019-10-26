@@ -96,7 +96,7 @@ class UniquePaths extends Component {
       <div className="container">
         <h1>Unique Paths</h1>
         <p>
-          How many unique paths from (0, 0) to (4, 4) are there?
+          If you could only move LEFT, DOWN, how many unique paths from (0, 0) to (4, 4) are there?
           <button disabled={this.state.isSolving} onClick={this.onClick(0, 0)}>solve</button>
         </p>
         <table>

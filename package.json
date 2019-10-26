@@ -4,9 +4,11 @@
   "private": true,
   "homepage": "https://juanandresnyc.github.io/me/",
   "dependencies": {
+    "animejs": "^3.1.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "react-scripts": "0.9.5"
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^0.9.5"
   },
   "devDependencies": {},
   "scripts": {
@@ -14,7 +16,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "predeploy": "yarn run build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   }
 }

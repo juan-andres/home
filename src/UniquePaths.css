@@ -1,0 +1,33 @@
+* {
+  color: white;
+}
+
+body {
+  background-color: black;
+}
+
+button {
+  color: black;
+}
+
+.container {
+  margin: 0 auto;
+  width: fit-content;
+}
+
+.cell {
+  background-color: #524948;
+  color: white;
+}
+
+.boundary {
+  background-color: transparent;
+  color: transparent;
+}
+
+.cell, .boundary {
+  width: 100px;
+  height: 100px;
+  text-align: end;
+  vertical-align: bottom;
+}

@@ -15,30 +15,29 @@ export class UniquePathsSolver {
     ];
 
     if (pNext[0] > this.destination[0] || pNext[1] > this.destination[1]) {
-      // out of bounds
-      await this.drawNext(pNext, 'invalid', 'easeInQuad');
-      await this.drawNext(pNext, 'empty', 'easeOutQuad');
+      // out of bounds, don't wait for it to clear
+      await this.drawNext(pNext, 'invalid');
+      await this.drawNext(pNext, 'empty');
       return;
     }
 
 
     if (pNext[0] === this.destination[0] && pNext[1] === this.destination[1]) {
-      await this.drawNext(pNext, 'success', 'easeInQuad');
-      await this.drawNext(pNext, 'grid', 'easeOutQuad');
+      await this.drawNext(pNext, 'success');
+      await this.drawNext(pNext, 'grid');
       return;
     }
 
-    await this.drawNext(pNext, 'next', 'easeInQuad');
+    await this.drawNext(pNext, 'next');
     await this.move([...path, pNext], LEFT_OFFSET);
     await this.move([...path, pNext], DOWN_OFFEST);
-    await this.drawNext(pNext, 'grid', 'easeOutQuad');
+    await this.drawNext(pNext, 'grid');
   }
 
-  async solve() {
-    const initPosition = [0, 0];
-    await this.drawNext(initPosition, 'next', 'easeInQuad');
+  async solve(initPosition) {
+    await this.drawNext(initPosition, 'next');
     await this.move([initPosition], LEFT_OFFSET);
     await this.move([initPosition], DOWN_OFFEST);
-    await this.drawNext(initPosition, 'grid', 'easeOutQuad');
+    await this.drawNext(initPosition, 'grid');
   }
 }

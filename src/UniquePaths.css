@@ -1,7 +1,3 @@
-* {
-  color: white;
-}
-
 body {
   background-color: black;
 }
@@ -9,10 +5,11 @@ body {
 button {
   background-color: white;
   color: black;
-  margin: 12px;
+  padding: 12px;
 }
 
 .container {
+  color: white;
   padding: 24px;
   margin: 0 auto;
   width: fit-content;

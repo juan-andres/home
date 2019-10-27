@@ -5,7 +5,9 @@
   "homepage": "https://juanandresnyc.github.io/me/",
   "dependencies": {
     "animejs": "^3.1.0",
+    "classnames": "^2.2.6",
     "react": "^16.11.0",
+    "react-device-motion": "^0.1.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^0.9.5"

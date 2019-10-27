@@ -19,6 +19,11 @@ body {
   transition: background-color 100ms ease-in;
 }
 
+.rival {
+  background-color: yellow;
+  transition: background-color 100ms ease-in;
+}
+
 /* .active {
   background-color: #CAFE48;
   transition: background-color 100ms ease-in;

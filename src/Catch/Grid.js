@@ -13,14 +13,14 @@ class Grid extends React.Component {
     super(props);
     this.m = props.m;
     this.n = props.n;
-    this.colorClass = props.color;
   }
 
   renderCell = (i, j) => {
     const id = getId(i, j);
     const cellClasses = classNames({
       'cell': true,
-      [this.colorClass]: this.props.i === i && this.props.j === j,
+      [this.props.colorClass]: this.props.i === i && this.props.j === j,
+      'rival': _.some(this.props.rivals, r => r.i === i && r.j === j),
     })
     return (
       <td className={cellClasses} id={id} key={id}></td>

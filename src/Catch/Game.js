@@ -19,7 +19,7 @@ class CatchGame extends React.Component {
     super(props);
 
     this.id = uuidv4();
-    this.colorClass = this.props.colorClass;
+
     this.m = 10;
     this.n = 10;
 
@@ -58,8 +58,13 @@ class CatchGame extends React.Component {
     ws.onclose = function (err) {
       console.log('onclose', err);
     }
-    ws.onmessage = function (event) {
+    ws.onmessage = (event) => {
       console.log('onmessage', event.data);
+      const rival = JSON.parse(event.data);
+      this.setState({
+        ...this.rivals,
+        [rival.id]: [rival.i, rival.j],
+      })
     };
   }
 
@@ -97,7 +102,8 @@ class CatchGame extends React.Component {
           n={this.n}
           i={this.state.i}
           j={this.state.j}
-          colorClass={this.colorClass}
+          rivals={this.state.rivals}
+          colorClass={this.props.colorClass}
         />
       </div>
     );

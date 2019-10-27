@@ -4,7 +4,7 @@ import { Route, HashRouter as Router } from 'react-router-dom';
 
 import App from './App';
 import UniquePaths from './UniquePaths';
-import CatchGame from './Catch/Game';
+import { Catcher, Runner } from './Catch/Game';
 
 import './index.css';
 
@@ -13,7 +13,8 @@ const routing = (
     <div>
       <Route exact path="/" component={App} />
       <Route path="/unique_paths" component={UniquePaths} />
-      <Route path="/catch_game" component={CatchGame} />
+      <Route path="/catch_game/catcher" component={Catcher} />
+      <Route path="/catch_game/runner" component={Runner} />
     </div>
   </Router>
 )

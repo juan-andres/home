@@ -9,7 +9,17 @@ body {
   height: 30px;
 }
 
-.active {
-  background-color: #CAFE48;
+.redCell {
+  background-color: red;
   transition: background-color 100ms ease-in;
 }
+
+.blueCell {
+  background-color: blue;
+  transition: background-color 100ms ease-in;
+}
+
+/* .active {
+  background-color: #CAFE48;
+  transition: background-color 100ms ease-in;
+} */

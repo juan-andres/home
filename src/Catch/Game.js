@@ -7,10 +7,19 @@ function transformRage(iStart, iEnd, oStart, oEnd, value) {
   return Math.round(oStart + slope * (value - iStart));
 }
 
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 class CatchGame extends React.Component {
   constructor(props) {
     super(props);
 
+    this.id = uuidv4();
+    this.colorClass = this.props.colorClass;
     this.m = 10;
     this.n = 10;
 
@@ -30,7 +39,19 @@ class CatchGame extends React.Component {
       alert('Use your phone instead!');
     }
 
-    const ws = new WebSocket('wss://catchgameserver.herokuapp.com/');
+    const ws = new WebSocket('ws://catchgameserver.herokuapp.com/');
+    // const ws = new WebSocket('ws://localhost:3001/');
+    console.log('ID', this.id);
+    ws.onopen = () => {
+      setInterval(() => {
+        ws.send(JSON.stringify({
+          id: this.id,
+          i: this.state.i,
+          j: this.state.j,
+        }));
+      }, 500);
+    };
+
     ws.onerror = function (err) {
       console.log('onerror', err);
     }
@@ -71,10 +92,19 @@ class CatchGame extends React.Component {
     return (
       <div>
         {this.renderDebug()}
-        <Grid m={this.m} n={this.n} i={this.state.i} j={this.state.j}/>
+        <Grid
+          m={this.m}
+          n={this.n}
+          i={this.state.i}
+          j={this.state.j}
+          colorClass={this.colorClass}
+        />
       </div>
     );
   }
 }
+
+export const Catcher = () => <CatchGame colorClass="redCell" />;
+export const Runner = () => <CatchGame colorClass="blueCell" />;
 
 export default CatchGame;

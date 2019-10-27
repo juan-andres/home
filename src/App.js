@@ -7,8 +7,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Link to={'/catch_game'}>Catch Game</Link>
-        <p id='server-time'></p>
+        <Link to={'/catch_game/catcher'}>Catcher</Link>
+        <Link to={'/catch_game/runner'}>Runner</Link>
       </div>
     );
   }

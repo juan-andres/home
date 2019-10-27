@@ -13,8 +13,8 @@ const routing = (
     <div>
       <Route exact path="/" component={App} />
       <Route path="/unique_paths" component={UniquePaths} />
-      <Route path="/catch_game/catcher" component={Catcher} />
-      <Route path="/catch_game/runner" component={Runner} />
+      <Route exact path="/catch_game/catcher" component={Catcher} />
+      <Route exact path="/catch_game/runner" component={Runner} />
     </div>
   </Router>
 )

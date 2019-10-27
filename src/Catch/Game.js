@@ -39,7 +39,7 @@ class CatchGame extends React.Component {
       alert('Use your phone instead!');
     }
 
-    const ws = new WebSocket('ws://catchgameserver.herokuapp.com/');
+    const ws = new WebSocket('wss://catchgameserver.herokuapp.com/');
     // const ws = new WebSocket('ws://localhost:3001/');
     console.log('ID', this.id);
     ws.onopen = () => {
@@ -62,8 +62,10 @@ class CatchGame extends React.Component {
       console.log('onmessage', event.data);
       const rival = JSON.parse(event.data);
       this.setState({
-        ...this.rivals,
-        [rival.id]: [rival.i, rival.j],
+        rivals: {
+          ...this.rivals,
+          [rival.id]: rival,
+        },
       })
     };
   }
@@ -94,6 +96,8 @@ class CatchGame extends React.Component {
   }
 
   render() {
+    console.log('rivals', this.state.rivals);
+
     return (
       <div>
         {this.renderDebug()}

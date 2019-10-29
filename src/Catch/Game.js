@@ -39,9 +39,16 @@ class CatchGame extends React.Component {
       alert('Use your phone instead!');
     }
 
-    const ws = new WebSocket('wss://catchgameserver.herokuapp.com/');
-    // const ws = new WebSocket('ws://localhost:3001/');
-    console.log('ID', this.id);
+    // TODO: pass websocket server as a variable
+    let websockerServerUrl;
+    if (window.location.origin.indexOf('github.io') >= 0) {
+      websockerServerUrl = 'wss://catchgameserver.herokuapp.com/';
+    } else {
+      websockerServerUrl = window.location.origin.replace('http', 'ws');
+      websockerServerUrl = websockerServerUrl.replace(':3000', ':3001');
+    }
+    
+    const ws = new WebSocket(websockerServerUrl);
     ws.onopen = () => {
       setInterval(() => {
         ws.send(JSON.stringify({
@@ -49,24 +56,23 @@ class CatchGame extends React.Component {
           i: this.state.i,
           j: this.state.j,
         }));
-      }, 500);
+      }, 100);
     };
 
-    ws.onerror = function (err) {
-      console.log('onerror', err);
-    }
-    ws.onclose = function (err) {
-      console.log('onclose', err);
-    }
-    ws.onmessage = (event) => {
-      console.log('onmessage', event.data);
-      const rival = JSON.parse(event.data);
-      this.setState({
-        rivals: {
-          ...this.rivals,
-          [rival.id]: rival,
-        },
-      })
+    ws.onerror = err => console.log('onerror', err);
+    ws.onclose = err => console.log('onclose', err);
+    ws.onmessage = event => {
+      try {
+        const rival = JSON.parse(event.data);
+        this.setState({
+          rivals: {
+            ...this.rivals,
+            [rival.id]: rival,
+          },
+        });
+      } catch (e) {
+        console.log('error parsing message', e);
+      }
     };
   }
 
@@ -87,6 +93,7 @@ class CatchGame extends React.Component {
   renderDebug() {
     return (
       <div className="debugContainer">
+        <p>i: {this.state.i} </p>
         <p>j: {this.state.j} </p>
         <p>alpha: {this.state.alpha}</p>
         <p>beta: {this.state.beta}</p>
@@ -96,8 +103,6 @@ class CatchGame extends React.Component {
   }
 
   render() {
-    console.log('rivals', this.state.rivals);
-
     return (
       <div>
         {this.renderDebug()}

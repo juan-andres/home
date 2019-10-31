@@ -1,125 +1,126 @@
 import React from 'react';
+import _ from 'lodash';
 
 import Grid from './Grid';
+import useAnimationFrame from './useAnimationFrame';
+import { withDeviceOrientation } from './withDeviceOrientation';
+import { withWebSocketSupport } from './withWebSocketSupport';
 
 function transformRage(iStart, iEnd, oStart, oEnd, value) {
   const slope = 1.0 * (oEnd - oStart) / (iEnd - iStart);
   return Math.round(oStart + slope * (value - iStart));
 }
 
-function uuidv4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
+const CatchGameBase = props => {
+  const [deltaTime, setDeltaTime] = React.useState(0.0);
+  const [velocity, setVelocity] = React.useState([0, 0]);
+  const [position, setPosition] = React.useState([0, 0]);
 
-class CatchGame extends React.Component {
-  constructor(props) {
-    super(props);
+  useAnimationFrame(delta => {
+    const orientation = props.getOrientation();
+    const g = 1;
+    const decay = 0.1;
+    const maxVel = 3;
+    setVelocity(prevVelocity => {
+      const beta = Math.max(-30, Math.min(30, orientation.beta));
+      const acc = g * Math.sin(beta * (180 / Math.PI));
 
-    this.id = uuidv4();
+      let xVel = prevVelocity[0] - acc;
 
-    this.m = 10;
-    this.n = 10;
+      const newVelocity = [
+        xVel * 0.9,
+        // Math.max(-maxVel, Math.min(maxVel, prevVelocity[0] + ( g * Math.sin(Math.max(-30, Math.min(30, orientation.gamma))) * delta))) * 0.9,
+        0,
+      ];
 
-    this.state = {
-      i: 0,
-      j: 0,
-      alpha: 0.0,
-      beta: 0.0,
-      gamma: 0.0,
-    };
-  }
+      return newVelocity;
 
-  componentDidMount() {
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', this.deviceOrientationHandler, false);
-    } else {
-      alert('Use your phone instead!');
-    }
+      newVelocity[0] = Number(newVelocity[0].toFixed(2));
 
-    // TODO: pass websocket server as a variable
-    let websockerServerUrl;
-    if (window.location.origin.indexOf('github.io') >= 0) {
-      websockerServerUrl = 'wss://catchgameserver.herokuapp.com/';
-    } else {
-      websockerServerUrl = window.location.origin.replace('http', 'ws');
-      websockerServerUrl = websockerServerUrl.replace(':3000', ':3001');
-    }
-    
-    const ws = new WebSocket(websockerServerUrl);
-    ws.onopen = () => {
-      setInterval(() => {
-        ws.send(JSON.stringify({
-          id: this.id,
-          i: this.state.i,
-          j: this.state.j,
-        }));
-      }, 100);
-    };
+      setPosition(prevPosition => ([
+        Math.max(0, Math.min(props.rows - 1,prevPosition[0] + 0.5 * delta * (prevVelocity[0] + newVelocity[0]))),
+        0, //0.5 * delta * (prevVelocity[1] + newVelocity[1]),
+        // Math.max(0, Math.min(props.rows - 1, prevPosition[0] + (0.5 * delta * (prevVelocity[0] + newVelocity[0])))),
+        // Math.max(0, Math.min(props.cols - 1, prevPosition[1] + (0.5 * delta * (prevVelocity[1] + newVelocity[1])))),
+      ]));
 
-    ws.onerror = err => console.log('onerror', err);
-    ws.onclose = err => console.log('onclose', err);
-    ws.onmessage = event => {
-      try {
-        const rival = JSON.parse(event.data);
-        this.setState({
-          rivals: {
-            ...this.rivals,
-            [rival.id]: rival,
-          },
-        });
-      } catch (e) {
-        console.log('error parsing message', e);
-      }
-    };
-  }
-
-  deviceOrientationHandler = evt => {
-    const beta = evt.beta.toFixed(2);
-    const gamma = evt.gamma.toFixed(2);
-    const i = transformRage(-30, 30, 0, this.m - 1, beta);
-    const j = transformRage(-30, 30, 0, this.n - 1, gamma);
-    this.setState({
-      i,
-      j,
-      beta,
-      gamma,
-      alpha: evt.alpha.toFixed(2),
+      return newVelocity;
     });
-  }
 
-  renderDebug() {
-    return (
-      <div className="debugContainer">
-        <p>i: {this.state.i} </p>
-        <p>j: {this.state.j} </p>
-        <p>alpha: {this.state.alpha}</p>
-        <p>beta: {this.state.beta}</p>
-        <p>gamma: {this.state.gamma}</p>
-      </div>
-    );
-  }
+    setDeltaTime(() => delta);
+  });
+
+  const pos = [Math.round(position[0]), position[1]];
+  return (
+    <div>
+      <p>position: [{position[0].toFixed(2)}, {position[1].toFixed(2)}]</p>
+      <p>velocity: [{velocity[0].toFixed(2)}, {velocity[1].toFixed(2)}]</p>
+      <Grid {...props} position={pos} />
+    </div>
+  );
+};
+
+const CatchGame = withWebSocketSupport()(withDeviceOrientation({ debug: true })(CatchGameBase));
+
+export class Catcher extends React.Component {
+  getWebSocketData = () => {
+    return {
+      action: 'UPDATE',
+      position: this.state.position,
+    }
+  };
+
+  onWebSocketData = data => {
+    if (data.action !== 'UPDATE') {
+      return;
+    }
+
+    this.setState({
+      rivals:  {
+        ...this.rivals,
+        [data.id]: data,
+      }
+    })
+
+    // const updatedRivals = {
+    //   ...this.rivals,
+    //   [data.id]: data,
+    // };
+
+    // const caught = _.reduce(updatedRivals, (result, r) => {
+    //   if (r.i === this.state.i && r.j === this.state.j) {
+    //     result.push(r.id);
+    //   }
+    //   return result;
+    // }, []);
+
+    // if (caught.length > 0) {
+    //   console.log('caught', caught);
+
+    //   this.ws.send(JSON.stringify({
+    //     action: 'CAUGHT',
+    //     id: this.id,
+    //     i: this.state.i,
+    //     j: this.state.j,
+    //     caught: caught,
+    //   }));
+    // }
+  };
 
   render() {
     return (
-      <div>
-        {this.renderDebug()}
-        <Grid
-          m={this.m}
-          n={this.n}
-          i={this.state.i}
-          j={this.state.j}
-          rivals={this.state.rivals}
-          colorClass={this.props.colorClass}
-        />
-      </div>
+      <CatchGame
+        rows={10}
+        cols={5}
+        {...this.props}
+        colorClass="redCell"
+        onWebSocketData={this.onWebSocketData} 
+        getWebSocketData={this.getWebSocketData}
+      />
     );
   }
 }
 
-export const Catcher = () => <CatchGame colorClass="redCell" />;
 export const Runner = () => <CatchGame colorClass="blueCell" />;
 
 export default CatchGame;

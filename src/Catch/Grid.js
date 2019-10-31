@@ -9,18 +9,12 @@ function getId(i, j) {
 }
 
 class Grid extends React.Component {
-  constructor(props) {
-    super(props);
-    this.m = props.m;
-    this.n = props.n;
-  }
-
   renderCell = (i, j) => {
     const id = getId(i, j);
     const cellClasses = classNames({
       'cell': true,
-      [this.props.colorClass]: this.props.i === i && this.props.j === j,
-      'rival': _.some(this.props.rivals, r => r.i === i && r.j === j),
+      [this.props.colorClass]: this.props.position[0] === i && this.props.position[1] === j,
+      'rival': _.some(this.props.rivals, r => r.position[0] === i && r.position[1] === j),
     })
     return (
       <td className={cellClasses} id={id} key={id}></td>
@@ -28,14 +22,14 @@ class Grid extends React.Component {
   }
 
   renderRow = i => (
-    <tr key={i}>{_.map(_.range(this.n + 1), j => this.renderCell(i, j))}</tr>
+    <tr key={i}>{_.map(_.range(this.props.cols), j => this.renderCell(i, j))}</tr>
   );
 
   render() {
     return (
       <table>
         <tbody>
-          {_.map(_.range(this.m + 1), i => this.renderRow(i))}
+          {_.map(_.range(this.props.rows), i => this.renderRow(i))}
         </tbody>
       </table>
     );
